@@ -251,7 +251,7 @@ def about_page():
     st.title("About the Breast Cancer Prediction Application")
 
     # Banner image at the top of the page
-    st.image("/Users/dustin/Downloads/CAT405 Code/Banner.png", use_column_width=True)
+    st.image("Banner.png", use_column_width=True)
 
     # Use columns to balance text and imagery
     col1, col2 = st.columns(2)
@@ -278,7 +278,7 @@ def about_page():
         # Add vertical space before the image
         st.write("              ")  # This adds a little space. You can add multiple lines for more space.
         st.markdown("\n\n\n\n\n\n\n\n")  # Adds two lines of space
-        st.image("/Users/dustin/Downloads/CAT405 Code/BC.jpeg", caption="Breast Cancer Awareness", use_column_width=True)
+        st.image("BC.jpeg", caption="Breast Cancer Awareness", use_column_width=True)
 
     # Section on commitment and additional information
     st.subheader("Our Commitment")
@@ -298,7 +298,7 @@ def about_page():
     st.header("Our Team")
     col3, col4 = st.columns([1, 2])
     with col3:
-        st.image("/Users/dustin/Downloads/CAT405 Code/Dustin.jpg", width=200)
+        st.image("Dustin.jpg", width=200)
 
     with col4:
         st.subheader("Aloysius Dustin Dealson")
@@ -429,7 +429,7 @@ def main_app():
         use_ml_page()  # Navigate to the Use ML page
         st.session_state['nav_to_ml'] = False  # Reset the flag to avoid automatic redirection after refresh
     else:
-        st.sidebar.image("/Users/dustin/Downloads/CAT405 Code/BCL_logo.png", width=100)  
+        st.sidebar.image("BCL_logo.png", width=100)  
 
         # Sidebar navigation
         st.sidebar.title("Navigation")
@@ -520,7 +520,7 @@ def login_page():
     st.markdown(hide_streamlit_ui_style, unsafe_allow_html=True)
 
     # Display the logo
-    st.image("/Users/dustin/Downloads/CAT405 Code/BCL_logo.png", width=100, use_column_width=True)
+    st.image("BCL_logo.png", width=100, use_column_width=True)
 
     # Login form
     st.markdown('<div class="login-container">', unsafe_allow_html=True)
