@@ -11,6 +11,10 @@ import mysql.connector
 from PIL import Image
 import matplotlib.pyplot as plt
 import seaborn as sns
+import psycopg2
+import psycopg2.extras
+import os
+
 
 # Set initial session states at the beginning of the script
 if 'logged_in' not in st.session_state:
@@ -45,22 +49,49 @@ def custom_notification(message, message_type="info"):
     """, unsafe_allow_html=True)
 
 
-# Database Connection
+# # Database Connection
+# def create_db_connection():
+#     try:
+#         return mysql.connector.connect(
+#             host='localhost', user='root', password='', database='movie_recommender'
+#         )
+#     except Exception as e:
+#         st.error(f"The error '{e}' occurred")
+#         return None
+
+# Use os.environ.get to read environment variable
+database_url = os.environ.get('DATABASE_URL')
+
 def create_db_connection():
     try:
-        return mysql.connector.connect(
-            host='localhost', user='root', password='', database='movie_recommender'
-        )
+        # Connect to your Heroku Postgres database using DATABASE_URL environment variable
+        conn = psycopg2.connect(database_url)
+        return conn
     except Exception as e:
         st.error(f"The error '{e}' occurred")
         return None
+    except Exception as e:
+        st.error(f"The error '{e}' occurred")
+        return None
+
+# # User Verification
+# def verify_user(username, password):
+#     connection = create_db_connection()
+#     if connection is not None:
+#         with connection.cursor(buffered=True) as cursor:
+#             query = "SELECT * FROM user WHERE namaUser = %s AND password = %s"
+#             cursor.execute(query, (username, password))
+#             result = cursor.fetchone()
+#         connection.close()
+#         return result
+#     return None
 
 # User Verification
 def verify_user(username, password):
     connection = create_db_connection()
     if connection is not None:
-        with connection.cursor(buffered=True) as cursor:
-            query = "SELECT * FROM user WHERE namaUser = %s AND password = %s"
+        with connection.cursor() as cursor:
+            query = "SELECT * FROM users WHERE username = %s AND password = %s"
             cursor.execute(query, (username, password))
             result = cursor.fetchone()
         connection.close()
