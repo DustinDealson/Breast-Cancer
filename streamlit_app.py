@@ -117,7 +117,7 @@ def load_svm_model():
     return clf
 
 # Load models
-model_weights_path = '/Users/dustin/Downloads/CAT405 Code/model.h5'
+model_weights_path = '/Users/dustin/Downloads/Deploy Version 1/model.h5'
 cnn_model = build_and_load_model(model_weights_path)
 svm_model = load_svm_model()
 
