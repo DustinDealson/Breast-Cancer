@@ -16,11 +16,11 @@ import psycopg2.extras
 import os
 
 
-# Set initial session states at the beginning of the script
-if 'logged_in' not in st.session_state:
-    st.session_state['logged_in'] = False
-if 'current_page' not in st.session_state:
-    st.session_state['current_page'] = 'home'
+# # Set initial session states at the beginning of the script
+# if 'logged_in' not in st.session_state:
+#     st.session_state['logged_in'] = False
+# if 'current_page' not in st.session_state:
+#     st.session_state['current_page'] = 'home'
 
 
 def custom_notification(message, message_type="info"):
@@ -86,17 +86,17 @@ def create_db_connection():
 #         return result
 #     return None
 
-# User Verification
-def verify_user(username, password):
-    connection = create_db_connection()
-    if connection is not None:
-        with connection.cursor() as cursor:
-            query = "SELECT * FROM users WHERE username = %s AND password = %s"
-            cursor.execute(query, (username, password))
-            result = cursor.fetchone()
-        connection.close()
-        return result
-    return None
+# # User Verification
+# def verify_user(username, password):
+#     connection = create_db_connection()
+#     if connection is not None:
+#         with connection.cursor() as cursor:
+#             query = "SELECT * FROM users WHERE username = %s AND password = %s"
+#             cursor.execute(query, (username, password))
+#             result = cursor.fetchone()
+#         connection.close()
+#         return result
+#     return None
 
 # Function to Build and Load the CNN Model
 def build_and_load_model(model_weights_path):
@@ -489,89 +489,89 @@ def remove_shadow_script():
     </script>
     """
 
-def login_page():
-   # Custom styles for the login page
-    st.markdown("""
-        <style>
-            /* Remove shadows and styles from all images and their containers */
-            img, .login-container, .login-logo, .login-logo img::before, .login-logo img::after {
-                box-shadow: none !important;
-                filter: none !important;
-                content: none !important;
-            }
+# def login_page():
+#    # Custom styles for the login page
+#     st.markdown("""
+#         <style>
+#             /* Remove shadows and styles from all images and their containers */
+#             img, .login-container, .login-logo, .login-logo img::before, .login-logo img::after {
+#                 box-shadow: none !important;
+#                 filter: none !important;
+#                 content: none !important;
+#             }
 
-            /* Style the login container */
-            .login-container {
-                padding: 2rem;
-                margin: 0 auto;
-                max-width: 330px;
-                background-color: #fff;
-                border-radius: 10px;
-            }
+#             /* Style the login container */
+#             .login-container {
+#                 padding: 2rem;
+#                 margin: 0 auto;
+#                 max-width: 330px;
+#                 background-color: #fff;
+#                 border-radius: 10px;
+#             }
 
-            /* Style the login logo container */
-            .login-logo {
-                display: flex;
-                justify-content: center;
-                margin-bottom: 1rem;
-            }
+#             /* Style the login logo container */
+#             .login-logo {
+#                 display: flex;
+#                 justify-content: center;
+#                 margin-bottom: 1rem;
+#             }
 
-            /* Style the logo image */
-            .login-logo img {
-                max-width: 150px; /* Control the size of the logo */
-                margin: 0 auto; /* Center logo horizontally */
-            }
+#             /* Style the logo image */
+#             .login-logo img {
+#                 max-width: 150px; /* Control the size of the logo */
+#                 margin: 0 auto; /* Center logo horizontally */
+#             }
 
-            /* Style the login button */
-            .stButton > button {
-                width: 100%;
-                padding: 0.5rem;
-                margin-top: 1rem;
-                border-radius: 5px; /* Rounded edges on button */
-                font-size: 1rem;
-                font-weight: bold;
-            }
-        </style>
-    """, unsafe_allow_html=True)
+#             /* Style the login button */
+#             .stButton > button {
+#                 width: 100%;
+#                 padding: 0.5rem;
+#                 margin-top: 1rem;
+#                 border-radius: 5px; /* Rounded edges on button */
+#                 font-size: 1rem;
+#                 font-weight: bold;
+#             }
+#         </style>
+#     """, unsafe_allow_html=True)
 
-    # Ensuring the login page is displayed without the sidebar and other Streamlit UI elements
-    hide_streamlit_ui_style = """
-        <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            .stButton > button { /* Style for the button */
-                width: 100%;
-                padding: 10px; /* Larger button with more padding */
-                border-radius: 5px; /* Rounded edges on button */
-                font-size: 1rem;
-                font-weight: bold;
-            }
-        </style>
-    """
-    st.markdown(hide_streamlit_ui_style, unsafe_allow_html=True)
+#     # Ensuring the login page is displayed without the sidebar and other Streamlit UI elements
+#     hide_streamlit_ui_style = """
+#         <style>
+#             #MainMenu {visibility: hidden;}
+#             footer {visibility: hidden;}
+#             .stButton > button { /* Style for the button */
+#                 width: 100%;
+#                 padding: 10px; /* Larger button with more padding */
+#                 border-radius: 5px; /* Rounded edges on button */
+#                 font-size: 1rem;
+#                 font-weight: bold;
+#             }
+#         </style>
+#     """
+#     st.markdown(hide_streamlit_ui_style, unsafe_allow_html=True)
 
-    # Display the logo
-    st.image("BCL_logo.png", width=100, use_column_width=True)
+#     # Display the logo
+#     st.image("BCL_logo.png", width=100, use_column_width=True)
 
-    # Login form
-    st.markdown('<div class="login-container">', unsafe_allow_html=True)
-    username = st.text_input('Username', placeholder="Enter your username")
-    password = st.text_input('Password', type='password', placeholder="Enter your password")
-    if st.button('Login'):
-        if verify_user(username, password):
-            st.session_state['logged_in'] = True
-            st.rerun()  # Updated method to rerun the app
-        else:
-            st.error('Incorrect username or password')
-    st.markdown('</div>', unsafe_allow_html=True)
+#     # Login form
+#     st.markdown('<div class="login-container">', unsafe_allow_html=True)
+#     username = st.text_input('Username', placeholder="Enter your username")
+#     password = st.text_input('Password', type='password', placeholder="Enter your password")
+#     if st.button('Login'):
+#         if verify_user(username, password):
+#             st.session_state['logged_in'] = True
+#             st.rerun()  # Updated method to rerun the app
+#         else:
+#             st.error('Incorrect username or password')
+#     st.markdown('</div>', unsafe_allow_html=True)
 
 
 
-# Show the appropriate page based on login status
-if 'logged_in' in st.session_state and st.session_state['logged_in']:
-    main_app()  # If logged in, show the main app
-else:
-    login_page()  # If not logged in, show the login page
+# # Show the appropriate page based on login status
+# if 'logged_in' in st.session_state and st.session_state['logged_in']:
+#     main_app()  # If logged in, show the main app
+# else:
+#     login_page()  # If not logged in, show the login page
 
 # This code listens for a button click on the "Use ML" link and updates the state
 if 'navigation' in st.session_state and st.session_state['navigation'] == 'Use ML':
