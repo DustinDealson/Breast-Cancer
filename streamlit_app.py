@@ -59,20 +59,20 @@ def custom_notification(message, message_type="info"):
 #         st.error(f"The error '{e}' occurred")
 #         return None
 
-# Use os.environ.get to read environment variable
-database_url = os.environ.get('DATABASE_URL')
+# # Use os.environ.get to read environment variable
+# database_url = os.environ.get('DATABASE_URL')
 
-def create_db_connection():
-    try:
-        # Connect to your Heroku Postgres database using DATABASE_URL environment variable
-        conn = psycopg2.connect(database_url)
-        return conn
-    except Exception as e:
-        st.error(f"The error '{e}' occurred")
-        return None
-    except Exception as e:
-        st.error(f"The error '{e}' occurred")
-        return None
+# def create_db_connection():
+#     try:
+#         # Connect to your Heroku Postgres database using DATABASE_URL environment variable
+#         conn = psycopg2.connect(database_url)
+#         return conn
+#     except Exception as e:
+#         st.error(f"The error '{e}' occurred")
+#         return None
+#     except Exception as e:
+#         st.error(f"The error '{e}' occurred")
+#         return None
 
 # # User Verification
 # def verify_user(username, password):
@@ -577,3 +577,5 @@ def remove_shadow_script():
 if 'navigation' in st.session_state and st.session_state['navigation'] == 'Use ML':
     st.session_state['nav_to_ml'] = True
     st.experimental_rerun()
+
+main_app()
