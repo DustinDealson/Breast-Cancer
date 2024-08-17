@@ -454,7 +454,196 @@ def use_ml_page():
                 st.markdown("Learn how to keep a healthy life: [Maintaining a Healthy Lifestyle](https://www.healthline.com/health/healthy-lifestyle)")
 
 
-# Define your main application page function
+def get_clean_data():
+  data = pd.read_csv("data.csv")
+  
+  data = data.drop(['Unnamed: 32', 'id'], axis=1)
+  
+  data['diagnosis'] = data['diagnosis'].map({ 'M': 1, 'B': 0 })
+  
+  return data
+
+def add_sidebar():
+  st.sidebar.header("Nuclear Size Quantification")
+
+
+  data = get_clean_data()
+  slider_labels = [
+      ("Radius (mean)", "radius_mean"),
+      ("Texture (mean)", "texture_mean"),
+      ("Perimeter (mean)", "perimeter_mean"),
+      ("Area (mean)", "area_mean"),
+      ("Smoothness (mean)", "smoothness_mean"),
+      ("Compactness (mean)", "compactness_mean"),
+      ("Concavity (mean)", "concavity_mean"),
+      ("Concave points (mean)", "concave points_mean"),
+      ("Symmetry (mean)", "symmetry_mean"),
+      ("Fractal dimension (mean)", "fractal_dimension_mean"),
+      ("Radius (se)", "radius_se"),
+      ("Texture (se)", "texture_se"),
+      ("Perimeter (se)", "perimeter_se"),
+      ("Area (se)", "area_se"),
+      ("Smoothness (se)", "smoothness_se"),
+      ("Compactness (se)", "compactness_se"),
+      ("Concavity (se)", "concavity_se"),
+      ("Concave points (se)", "concave points_se"),
+      ("Symmetry (se)", "symmetry_se"),
+      ("Fractal dimension (se)", "fractal_dimension_se"),
+      ("Radius (worst)", "radius_worst"),
+      ("Texture (worst)", "texture_worst"),
+      ("Perimeter (worst)", "perimeter_worst"),
+      ("Area (worst)", "area_worst"),
+      ("Smoothness (worst)", "smoothness_worst"),
+      ("Compactness (worst)", "compactness_worst"),
+      ("Concavity (worst)", "concavity_worst"),
+      ("Concave points (worst)", "concave points_worst"),
+      ("Symmetry (worst)", "symmetry_worst"),
+      ("Fractal dimension (worst)", "fractal_dimension_worst"),
+  ]
+
+  return {
+      key: st.sidebar.slider(
+          label,
+          min_value=float(0),
+          max_value=float(data[key].max()),
+        #   value=float(data[key].mean()),
+        value=float(0),
+      )
+      for label, key in slider_labels
+  }
+
+def get_scaled_values(input_dict):
+  data = get_clean_data()
+  X = data.drop(['diagnosis'], axis=1)
+  scaled_dict = {}
+  
+  for key, value in input_dict.items():
+    max_val = X[key].max()
+    min_val = X[key].min()
+    scaled_value = (value - min_val) / (max_val - min_val)
+    scaled_dict[key] = scaled_value
+  
+  return scaled_dict
+  
+#Radar Chart
+def get_radar_chart(input_data):
+  input_data = get_scaled_values(input_data)
+  categories = ['Radius', 'Texture', 'Perimeter', 'Area', 
+                'Smoothness', 'Compactness', 
+                'Concavity', 'Concave Points',
+                'Symmetry', 'Fractal Dimension']
+
+  fig = go.Figure()
+
+  fig.add_trace(go.Scatterpolar(
+    #   Taking data from the input data
+        r=[
+          input_data['radius_mean'], input_data['texture_mean'], input_data['perimeter_mean'],
+          input_data['area_mean'], input_data['smoothness_mean'], input_data['compactness_mean'],
+          input_data['concavity_mean'], input_data['concave points_mean'], input_data['symmetry_mean'],
+          input_data['fractal_dimension_mean']
+        ],
+        theta=categories,
+        fill='toself',
+        name='Mean Value'
+  ))
+  fig.add_trace(go.Scatterpolar(
+        r=[
+          input_data['radius_se'], input_data['texture_se'], input_data['perimeter_se'], input_data['area_se'],
+          input_data['smoothness_se'], input_data['compactness_se'], input_data['concavity_se'],
+          input_data['concave points_se'], input_data['symmetry_se'],input_data['fractal_dimension_se']
+        ],
+        theta=categories,
+        fill='toself',
+        name='Standard Error'
+  ))
+  fig.add_trace(go.Scatterpolar(
+        r=[
+          input_data['radius_worst'], input_data['texture_worst'], input_data['perimeter_worst'],
+          input_data['area_worst'], input_data['smoothness_worst'], input_data['compactness_worst'],
+          input_data['concavity_worst'], input_data['concave points_worst'], input_data['symmetry_worst'],
+          input_data['fractal_dimension_worst']
+        ],
+        theta=categories,
+        fill='toself',
+        name='Worst Value'
+  ))
+
+  fig.update_layout(
+    polar=dict(
+      radialaxis=dict(
+        visible=True,
+        range=[0, 1]
+      )),
+    showlegend=True
+  )
+  
+  return fig
+
+def add_predictions(input_data):
+    model = pickle.load(open("model_2.pkl", "rb"))
+    scaler = pickle.load(open("scaler.pkl", "rb"))
+    input_array = np.array(list(input_data.values())).reshape(1, -1)
+    input_array_scaled = scaler.transform(input_array)
+
+    # Check if all inputs are 0
+    if np.all(input_array == 0):
+        prediction_label = "---"
+    else:
+        prediction = model.predict(input_array_scaled)
+        prediction_label = "Malignant" if prediction[0] == 1 else "Benign"
+
+    st.subheader("Cell Cluster Prediction")
+    st.write("The cell cluster is classified as:", prediction_label)
+
+
+    # prediction = model.predict(input_array_scaled)
+    # probabilities = model.predict_proba(input_array_scaled)[0]
+
+    # st.subheader("Cell Cluster Prediction")
+    # st.write("The cell cluster is classified as:", "Malignant" if prediction[0] == 1 else "Benign")
+
+
+
+
+def manual_ml_page():
+    input_data = add_sidebar()
+
+    with st.container():
+        st.title("Breast Cancer Predictor")
+
+    col1, col2 = st.columns([3, 1])
+
+    with col1:
+        radar_chart = get_radar_chart(input_data)
+        st.plotly_chart(radar_chart)
+
+    with col2:
+        add_predictions(input_data)
+
+# # Define your main application page function
+# def main_app():
+#     if 'nav_to_ml' in st.session_state and st.session_state['nav_to_ml']:
+#         use_ml_page()  # Navigate to the Use ML page
+#         st.session_state['nav_to_ml'] = False  # Reset the flag to avoid automatic redirection after refresh
+#     else:
+#         st.sidebar.image("BCL_logo.png", width=100)  
+
+#         # Sidebar navigation
+#         st.sidebar.title("Navigation")
+#         choice = st.sidebar.radio("Go to", ["Home Page", "Dashboard", "About", "Use ML"])
+
+#         # Conditional navigation
+#         if choice == "Home Page":
+#             home_page()
+#         elif choice == "Dashboard":  
+#             dashboard_page() 
+#         elif choice == "About":
+#             about_page()
+#         elif choice == "Use ML":
+#             use_ml_page()
+
+# Define main application page function
 def main_app():
     if 'nav_to_ml' in st.session_state and st.session_state['nav_to_ml']:
         use_ml_page()  # Navigate to the Use ML page
@@ -464,18 +653,30 @@ def main_app():
 
         # Sidebar navigation
         st.sidebar.title("Navigation")
-        choice = st.sidebar.radio("Go to", ["Home Page", "Dashboard", "About", "Use ML"])
-
-        # Conditional navigation
-        if choice == "Home Page":
+        
+        # Change to buttons instead of radio
+        if st.sidebar.button("Home Page"):
+            st.session_state['current_page'] = 'home'
+        if st.sidebar.button("Exploratory Data Analysis"):
+            st.session_state['current_page'] = 'dashboard'
+        if st.sidebar.button("About"):
+            st.session_state['current_page'] = 'about'
+        if st.sidebar.button("Use ML"):
+            st.session_state['current_page'] = 'use_ml'
+        if st.sidebar.button("Interactive ML model"):
+            st.session_state['current_page'] = 'manual_ml'
+            
+        # Display the current page based on the button clicked
+        if st.session_state.get('current_page', 'home') == 'home':
             home_page()
-        elif choice == "Dashboard":  
-            dashboard_page() 
-        elif choice == "About":
+        elif st.session_state['current_page'] == 'dashboard':
+            dashboard_page()
+        elif st.session_state['current_page'] == 'about':
             about_page()
-        elif choice == "Use ML":
+        elif st.session_state['current_page'] == 'use_ml':
             use_ml_page()
-
+        elif st.session_state['current_page'] == 'manual_ml':
+            manual_ml_page()
 
 def remove_shadow_script():
     return """
